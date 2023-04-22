@@ -20,10 +20,10 @@ ShopBag is a Biding Marketplace project Created with MERN Stack Technology
 
 In the project directory, you can run:
 
-### `npm start`
+ `npm start`
 
 you can install this project:
 
-### `npm install`
+ `npm install`
 
 
