@@ -1,20 +1,30 @@
 import React from "react";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { Link } from "react-router-dom";
 import Divider from "../../components/Divider";
+import { RegisterUser } from "../../apiCalls/user";
 
 const rules = [
   {
     required: true,
-    message: 'required',
-  }
-]
+    message: "required",
+  },
+];
 
 const Register = () => {
+  const onFinish = async (values) => {
+    const response = await RegisterUser(values);
+    try {     
 
-  const onFinish = (values) => {
-    console.log("success", values);
-   }
+      if (response.success) {
+        message.success(response.message);
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      message.error(response.message);
+    }
+  };
   return (
     <div className="h-screen bg-primary flex justify-center items-center">
       <div className="bg-third p-5 rounded w-[450px] ">
@@ -35,7 +45,7 @@ const Register = () => {
           <Form.Item label="Password" name="password" rules={rules}>
             <Input placeholder="Password" type="password" />
           </Form.Item>
-          <Button type="primary" className="mt-2"htmlType="submit" block>
+          <Button type="primary" className="mt-2" htmlType="submit" block>
             Register
           </Button>
           <div className="mt-5 text-center">

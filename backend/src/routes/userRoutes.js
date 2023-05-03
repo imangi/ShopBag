@@ -2,14 +2,16 @@ const router = require("express").Router();
 const User = require("../models/userModels");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const authMiddleware = require("../middleware/authMiddleware");
 
-const JWT_TOKEN = process.env.JWT_TOKEN;
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 //new user Registration
 
 router.post("/register", async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.user.email });
+    const user = await User.findOne({ email: req.body.email });
 
     //checking if user is already registered
     if (user) {
@@ -27,7 +29,7 @@ router.post("/register", async (req, res) => {
 
     res.send({
       success: true,
-      message: "created successfully",
+      message: "User created successfully",
     });
   } catch (error) {
     res.send({
@@ -41,7 +43,7 @@ router.post("/login", async (req, res) => {
   try {
     //checking if user is already registered
 
-    const user = await User.findOne({ email: req.user.email });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) {
       throw new Error("User not found");
     }
@@ -55,7 +57,9 @@ router.post("/login", async (req, res) => {
 
     //create & assign token
 
-    const token = jwt.sign({ userId: user._id }, JWT_TOKEN);
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresin: "1d",
+    });
 
     if (!validPassword) {
       throw new Error("invalid password");
@@ -74,5 +78,22 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/get-current-user", authMiddleware, async (req, res) => {
+  try {
+
+    const user = await User.findById(req.body.userId);
+    res.send({
+      success: true,
+      message: "user fetched successfully",
+      data: user,
+    });
+    
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+})
 
 module.exports = router;
